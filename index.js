@@ -30,27 +30,31 @@ async function run() {
     const database = client.db("travel");
     const servicesCollection = database.collection("services");
     const ordersCollection = database.collection("orders");
+    const reviewsCollection = database.collection("reviwes")
 
     app.get("/services", async (req, res) => {
       const cursor = await servicesCollection.find({});
       const services = await cursor.toArray();
       res.json(services);
     });
+
     app.get("/services/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const service = await servicesCollection.findOne(query);
       res.json(service);
     });
+
     //service add using post
     app.post("/addService", async (req, res) => {
       console.log(req);
       const service = req.body;
       // console.log('hitting the post', service)
       const result = await servicesCollection.insertOne(service);
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
+
     // addd service in order section
     app.post("/order", async (req, res) => {
     //   console.log('hitting order function')
@@ -60,11 +64,13 @@ async function run() {
       // console.log(result)
       res.send(result);
     });
+
     app.get("/manageOrder", async (req, res) => {
       const cursor = await ordersCollection.find({});
       const orders = await cursor.toArray();
       res.json(orders);
     });
+
     app.get("/myOrder/:email", async (req, res) => {
       const email = req.params.email;
       // console.log(email)
@@ -73,14 +79,16 @@ async function run() {
       const orders = await result.toArray();
       res.json(orders);
     });
+
     app.delete("/myOrder/:id", async (req, res) => {
       const id = req.params.id;
-      console.log(id);
+      // console.log(id);
       const query = { _id: id };
       const result = await ordersCollection.deleteOne(query);
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
+
     //UPDATE STATUS
     app.put("/manageOrder/:id", async (req, res) => {
       const id = req.params.id;
@@ -94,6 +102,22 @@ async function run() {
 
       // console.log('hit the put ',id)
     });
+
+    // review section 
+    app.post('/review', async(req, res)=>{
+      // console.log('hitting the review')
+      const review = req.body;
+      // console.log(review)
+      const result = await reviewsCollection.insertOne(review)
+      res.send(result)
+    })
+    // get review 
+    app.get('/review', async(req, res)=>{
+      const cursor = await reviewsCollection.find({})
+      const result = await cursor.toArray() 
+      res.json(result)
+    })
+
   } finally {
   }
 }
